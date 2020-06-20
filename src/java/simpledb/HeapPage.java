@@ -67,7 +67,7 @@ public class HeapPage implements Page {
     */
     private int getNumTuples() {        
         // some code goes here
-        return 0;
+        return tuples.length;
 
     }
 
@@ -78,7 +78,7 @@ public class HeapPage implements Page {
     private int getHeaderSize() {        
         
         // some code goes here
-        return 0;
+        return header.length;
                  
     }
     
@@ -112,7 +112,7 @@ public class HeapPage implements Page {
      */
     public HeapPageId getId() {
     // some code goes here
-    throw new UnsupportedOperationException("implement this");
+    return pid;
     }
 
     /**
@@ -244,6 +244,14 @@ public class HeapPage implements Page {
      */
     public void deleteTuple(Tuple t) throws DbException {
         // some code goes here
+        for (int i = 0; i < numSlots; ++i) {
+            if (isSlotUsed(i) && t.equals(tuples[i])) {
+                markSlotUsed(i, false);
+                tuples[i] = null;
+                return;
+            }
+        }
+        throw new DbException("tuple not found");
         // not necessary for lab1
     }
 
@@ -256,6 +264,18 @@ public class HeapPage implements Page {
      */
     public void insertTuple(Tuple t) throws DbException {
         // some code goes here
+        if (!td.equals(t.getTupleDesc())) {
+            throw new DbException("tuple description mimatched");
+        }
+        for (int i = 0; i < numSlots; ++i) {
+            if (!isSlotUsed(i)) {
+                markSlotUsed(i, true);
+                t.setRecordId(new RecordId(getId(), i));
+                tuples[i] = t;
+                return;
+            }
+        }
+        throw new DbException("no empty slots");
         // not necessary for lab1
     }
 
@@ -282,7 +302,13 @@ public class HeapPage implements Page {
      */
     public int getNumEmptySlots() {
         // some code goes here
-        return 0;
+        int num = 0;
+        for (int i = 0; i < numSlots; ++i) {
+            if (!isSlotUsed(i)) {
+                num++;
+            }
+        }
+        return num;
     }
 
     /**
@@ -290,7 +316,8 @@ public class HeapPage implements Page {
      */
     public boolean isSlotUsed(int i) {
         // some code goes here
-        return false;
+
+        return ((header[i/8] >> (i % 8)) & 1) == 1; //header uses bitmap to mark slot usage
     }
 
     /**
@@ -307,7 +334,7 @@ public class HeapPage implements Page {
      */
     public Iterator<Tuple> iterator() {
         // some code goes here
-        return null;
+        return Arrays.asList(tuples).iterator();
     }
 
 }

@@ -7,7 +7,8 @@
     <property name="build.src" location="${build}/src"/>
     <property name="build.test" location="${build}/test"/>
     <property name="depcache" location="${build}/depcache"/>
-
+    <property name="srcdir" location="src/java"/>
+    <property name="targetdir" location="src/bin"/>
     <property name="lib" location="lib"/>
     <property name="doc" location="javadoc"/>
     <property name="dist" location="dist"/>
