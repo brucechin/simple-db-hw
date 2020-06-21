@@ -27,6 +27,15 @@ public class Tuple implements Serializable {
         tupleDesc = td;
         fields = new Field[td.numFields()];
     }
+    
+    public static Tuple merge(Tuple t1, Tuple t2) {
+        Tuple tuple = new Tuple(TupleDesc.merge(t1.getTupleDesc(), t2.getTupleDesc()));
+        tuple.recordId = null;
+        System.arraycopy(t1.fields, 0, tuple.fields, 0, t1.getTupleDesc().numFields());
+        System.arraycopy(t2.fields, 0, tuple.fields, t1.getTupleDesc().numFields(),
+                t2.getTupleDesc().numFields());
+        return tuple;
+    }
 
     /**
      * @return The TupleDesc representing the schema of this tuple.
